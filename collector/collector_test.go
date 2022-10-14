@@ -1,8 +1,10 @@
-package collector
+package collector_test
 
 import (
-	"reflect"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
+	"github.com/nginxinc/nginx-prometheus-exporter/collector"
 )
 
 func TestMergeLabels(t *testing.T) {
@@ -33,8 +35,9 @@ func TestMergeLabels(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := MergeLabels(tt.mapA, tt.mapB); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("mergeLabels() = %v, want %v", got, tt.want)
+			got := collector.MergeLabels(tt.mapA, tt.mapB)
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("%s\n", cmp.Diff(got, tt.want))
 			}
 		})
 	}

@@ -14,21 +14,16 @@ The following is a set of guidelines for contributing to the NGINX Prometheus Ex
   * [Git Style Guide](#git-style-guide)
   * [Go Style Guide](#go-style-guide)
 
-[Code of Conduct](https://github.com/nginxinc/nginx-prometheus-exporter/blob/main/CODE_OF_CONDUCT.md)
 
 ## Ask a Question
 
-We will have a public forum soon where you can come and ask questions and have a discussion. For now please open an Issue on GitHub with the label `question`.
+Please open an Issue on GitHub with the label `question`.
 
 
 ## Getting Started
 
 Follow our [Getting Started Guide](README.md#getting-started) to get the NGINX Prometheus Exporter up and running.
 
-### Project Structure
-
-* This Prometheus Exporter is written in Go and supports both the open source NGINX software and NGINX Plus.
-* The project dependencies reside in the `/vendor`. We use [go modules](https://github.com/golang/go/wiki/Modules) for managing dependencies.
 
 ## Contributing
 
@@ -43,7 +38,7 @@ To suggest an enhancement, please create an issue on GitHub with the label `enha
 ### Open a Pull Request
 
 * Fork the repo, create a branch, submit a PR when your changes are tested and ready for review
-* Fill in [our pull request template](https://github.com/nginxinc/nginx-prometheus-exporter/issues/new?template=bug_report.md)
+* Fill in [our pull request template](https://github.com/qba73/nginx-prometheus-exporter/issues/new?template=bug_report.md)
 
 Note: if you’d like to implement a new feature, please consider creating a feature request issue first to start a discussion about the feature.
 
@@ -63,5 +58,5 @@ Note: if you’d like to implement a new feature, please consider creating a fea
 
 * Run `gofmt` over your code to automatically resolve a lot of style issues. Most editors support this running automatically when saving a code file.
 * Run `go lint` and `go vet` on your code too to catch any other issues.
-* Follow this guide on some good practice and idioms for Go -  https://github.com/golang/go/wiki/CodeReviewComments
+* Install [staticcheck](https://staticcheck.io) and run ```staticcheck ./...```
 * To check for extra issues, install [golangci-lint](https://github.com/golangci/golangci-lint) and run `make lint` or `golangci-lint run`

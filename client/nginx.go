@@ -8,6 +8,12 @@ import (
 	"net/http"
 )
 
+// =============================================================
+// TODO:
+// New() -> refactor returned values as network call is removed
+// Figure out if this code is needed at all here
+// If code is neede then refactor tests to communicate intent clearly.
+
 const templateMetrics string = `Active connections: %d 
 server accepts handled requests
 %d %d %d 
@@ -38,13 +44,14 @@ type StubConnections struct {
 
 // NewNginxClient creates an NginxClient.
 func NewNginxClient(httpClient *http.Client, apiEndpoint string) (*NginxClient, error) {
-	client := &NginxClient{
+	client := NginxClient{
 		apiEndpoint: apiEndpoint,
 		httpClient:  httpClient,
 	}
-
-	_, err := client.GetStubStats()
-	return client, err
+	// TODO: removed network call from here, keeping return values
+	// for now to satisfy callers of this func in other part of the
+	// code. To be refactored!
+	return &client, nil
 }
 
 // GetStubStats fetches the stub_status metrics.

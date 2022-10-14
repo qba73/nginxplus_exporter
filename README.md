@@ -1,4 +1,5 @@
-[![CI](https://github.com/nginxinc/nginx-prometheus-exporter/workflows/Continuous%20Integration/badge.svg)](https://github.com/nginxinc/nginx-prometheus-exporter/actions?query=workflow%3A%22Continuous+Integration%22) [![FOSSA Status](https://app.fossa.com/api/projects/custom%2B5618%2Fgithub.com%2Fnginxinc%2Fnginx-prometheus-exporter.svg?type=shield)](https://app.fossa.com/projects/custom%2B5618%2Fgithub.com%2Fnginxinc%2Fnginx-prometheus-exporter?ref=badge_shield) [![Go Report Card](https://goreportcard.com/badge/github.com/nginxinc/nginx-prometheus-exporter)](https://goreportcard.com/report/github.com/nginxinc/nginx-prometheus-exporter) ![GitHub all releases](https://img.shields.io/github/downloads/nginxinc/nginx-prometheus-exporter/total?logo=github) ![GitHub release (latest by SemVer)](https://img.shields.io/github/downloads/nginxinc/nginx-prometheus-exporter/latest/total?sort=semver&logo=github) [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/nginxinc/nginx-prometheus-exporter?logo=github&sort=semver)](https://github.com/nginxinc/nginx-prometheus-exporter/releases/latest) ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/nginxinc/nginx-prometheus-exporter?logo=go) [![Docker Pulls](https://img.shields.io/docker/pulls/nginx/nginx-prometheus-exporter?logo=docker&logoColor=white)](https://hub.docker.com/r/nginx/nginx-prometheus-exporter) ![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/nginx/nginx-prometheus-exporter?logo=docker&logoColor=white&sort=semver) [![Slack](https://img.shields.io/badge/slack-%23nginx--prometheus--exporter-green?logo=slack)](https://nginxcommunity.slack.com/channels/nginx-prometheus-exporter)
+[![CI](https://github.com/qba73/ngx-prometheus-exporter/workflows/Continuous%20Integration/badge.svg)](https://github.com/qba73/ngx-prometheus-exporter/actions?query=workflow%3A%22Continuous+Integration%22) 
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/nginxinc/nginx-prometheus-exporter?logo=go)
 
 # NGINX Prometheus Exporter
 
@@ -28,17 +29,9 @@ We assume that you have already installed Prometheus and NGINX or NGINX Plus. Ad
 
 To start the exporter we use the [docker run](https://docs.docker.com/engine/reference/run/) command.
 
-* To export NGINX metrics, run:
-    ```
-    $ docker run -p 9113:9113 nginx/nginx-prometheus-exporter:0.10.0 -nginx.scrape-uri=http://<nginx>:8080/stub_status
-    ```
-    where `<nginx>` is the IP address/DNS name, through which NGINX is available.
-
-* To export NGINX Plus metrics, run:
-    ```
-    $ docker run -p 9113:9113 nginx/nginx-prometheus-exporter:0.10.0 -nginx.plus -nginx.scrape-uri=http://<nginx-plus>:8080/api
-    ```
-    where `<nginx-plus>` is the IP address/DNS name, through which NGINX Plus is available.
+```bash
+add instructions
+```
 
 ### Running the Exporter Binary
 
@@ -292,18 +285,16 @@ The exporter logs errors to the standard output. When using Docker, if the expor
 
 ## Releases
 
-### Docker images
-We publish the Docker image on [DockerHub](https://hub.docker.com/r/nginx/nginx-prometheus-exporter/), [GitHub Container](https://github.com/nginxinc/nginx-prometheus-exporter/pkgs/container/nginx-prometheus-exporter), [Amazon ECR Public Gallery](https://gallery.ecr.aws/nginx/nginx-prometheus-exporter) and [Quay.io](https://quay.io/repository/nginx/nginx-prometheus-exporter).
-
-As an alternative, you can choose the *edge* version built from the [latest commit](https://github.com/nginxinc/nginx-prometheus-exporter/commits/main) from the main branch. The edge version is useful for experimenting with new features that are not yet published in a stable release.
-
 ### Binaries
-We publish the binaries for multiple Operating Systems and architectures on the GitHub [releases page](https://github.com/nginxinc/nginx-prometheus-exporter/releases).
+
+```
+todo: add information here
+```
 
 ### Homebrew
 You can add the NGINX homebrew tap with
 ```
-$ brew tap nginxinc/tap
+$ brew tap sevenbytes/tap
 ```
 and then install the formula with
 ```
@@ -343,16 +334,12 @@ The official Grafana dashboard is provided with the exporter for NGINX. Check th
 
 ## Contacts
 
-We’d like to hear your feedback! If you have any suggestions or experience issues with the NGINX Prometheus Exporter, please create an issue or send a pull request on GitHub.
-You can contact us directly via integrations@nginx.com or on the [NGINX Community Slack](https://nginxcommunity.slack.com/channels/nginx-prometheus-exporter) in the `#nginx-prometheus-exporter` channel.
+If you have any suggestions or experience issues with the NGINX Prometheus Exporter, please create an issue or send a pull request on GitHub.
 
 ## Contributing
 
 If you'd like to contribute to the project, please read our [Contributing guide](CONTRIBUTING.md).
 
-## Support
-
-The commercial support is available for NGINX Plus customers when the NGINX Prometheus Exporter is used with NGINX Ingress Controller.
 
 ## License
 

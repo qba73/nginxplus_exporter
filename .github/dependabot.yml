@@ -5,17 +5,16 @@ updates:
     schedule:
       interval: weekly
     reviewers:
-      - "nginxinc/kic"
-      - "ciarams87"
+      - "qba73"
   - package-ecosystem: "gomod"
     directory: "/"
     schedule:
       interval: weekly
     reviewers:
-      - "nginxinc/kic"
+      - "qba73"
   - package-ecosystem: "docker"
     directory: "/build"
     schedule:
       interval: weekly
     reviewers:
-      - "nginxinc/kic"
+      - "qba73"

@@ -6,8 +6,12 @@ import (
 	"sync"
 
 	plusclient "github.com/nginxinc/nginx-plus-go-client/client"
+	"github.com/nginxinc/nginx-prometheus-exporter/client"
 	"github.com/prometheus/client_golang/prometheus"
 )
+
+// =================================================================
+// NGINX Plus
 
 // LabelUpdater updates the labels of upstream server and server zone metrics
 type LabelUpdater interface {
@@ -1197,4 +1201,106 @@ func newLimitConnectionMetric(namespace string, metricName string, docString str
 
 func newStreamLimitConnectionMetric(namespace string, metricName string, docString string, constLabels prometheus.Labels) *prometheus.Desc {
 	return prometheus.NewDesc(prometheus.BuildFQName(namespace, "stream_limit_connection", metricName), docString, []string{"zone"}, constLabels)
+}
+
+// =================================================================
+// NGINX
+
+// NginxCollector collects NGINX metrics. It implements prometheus.Collector interface.
+type NginxCollector struct {
+	nginxClient *client.NginxClient
+	metrics     map[string]*prometheus.Desc
+	upMetric    prometheus.Gauge
+	mutex       sync.Mutex
+}
+
+// NewNginxCollector creates an NginxCollector.
+func NewNginxCollector(nginxClient *client.NginxClient, namespace string, constLabels map[string]string) *NginxCollector {
+	return &NginxCollector{
+		nginxClient: nginxClient,
+		metrics: map[string]*prometheus.Desc{
+			"connections_active":   newGlobalMetric(namespace, "connections_active", "Active client connections", constLabels),
+			"connections_accepted": newGlobalMetric(namespace, "connections_accepted", "Accepted client connections", constLabels),
+			"connections_handled":  newGlobalMetric(namespace, "connections_handled", "Handled client connections", constLabels),
+			"connections_reading":  newGlobalMetric(namespace, "connections_reading", "Connections where NGINX is reading the request header", constLabels),
+			"connections_writing":  newGlobalMetric(namespace, "connections_writing", "Connections where NGINX is writing the response back to the client", constLabels),
+			"connections_waiting":  newGlobalMetric(namespace, "connections_waiting", "Idle client connections", constLabels),
+			"http_requests_total":  newGlobalMetric(namespace, "http_requests_total", "Total http requests", constLabels),
+		},
+		upMetric: newUpMetric(namespace, constLabels),
+	}
+}
+
+// Describe sends the super-set of all possible descriptors of NGINX metrics
+// to the provided channel.
+func (c *NginxCollector) Describe(ch chan<- *prometheus.Desc) {
+	ch <- c.upMetric.Desc()
+
+	for _, m := range c.metrics {
+		ch <- m
+	}
+}
+
+// Collect fetches metrics from NGINX and sends them to the provided channel.
+func (c *NginxCollector) Collect(ch chan<- prometheus.Metric) {
+	c.mutex.Lock() // To protect metrics from concurrent collects
+	defer c.mutex.Unlock()
+
+	stats, err := c.nginxClient.GetStubStats()
+	if err != nil {
+		c.upMetric.Set(nginxDown)
+		ch <- c.upMetric
+		log.Printf("Error getting stats: %v", err)
+		return
+	}
+
+	c.upMetric.Set(nginxUp)
+	ch <- c.upMetric
+
+	ch <- prometheus.MustNewConstMetric(c.metrics["connections_active"],
+		prometheus.GaugeValue, float64(stats.Connections.Active))
+	ch <- prometheus.MustNewConstMetric(c.metrics["connections_accepted"],
+		prometheus.CounterValue, float64(stats.Connections.Accepted))
+	ch <- prometheus.MustNewConstMetric(c.metrics["connections_handled"],
+		prometheus.CounterValue, float64(stats.Connections.Handled))
+	ch <- prometheus.MustNewConstMetric(c.metrics["connections_reading"],
+		prometheus.GaugeValue, float64(stats.Connections.Reading))
+	ch <- prometheus.MustNewConstMetric(c.metrics["connections_writing"],
+		prometheus.GaugeValue, float64(stats.Connections.Writing))
+	ch <- prometheus.MustNewConstMetric(c.metrics["connections_waiting"],
+		prometheus.GaugeValue, float64(stats.Connections.Waiting))
+	ch <- prometheus.MustNewConstMetric(c.metrics["http_requests_total"],
+		prometheus.CounterValue, float64(stats.Requests))
+}
+
+const (
+	nginxUp   = 1
+	nginxDown = 0
+)
+
+func newGlobalMetric(namespace string, metricName string, docString string, constLabels map[string]string) *prometheus.Desc {
+	return prometheus.NewDesc(namespace+"_"+metricName, docString, nil, constLabels)
+}
+
+func newUpMetric(namespace string, constLabels map[string]string) prometheus.Gauge {
+	return prometheus.NewGauge(prometheus.GaugeOpts{
+		Namespace:   namespace,
+		Name:        "up",
+		Help:        "Status of the last metric scrape",
+		ConstLabels: constLabels,
+	})
+}
+
+// MergeLabels merges two maps of labels.
+func MergeLabels(a map[string]string, b map[string]string) map[string]string {
+	c := make(map[string]string)
+
+	for k, v := range a {
+		c[k] = v
+	}
+	for k, v := range b {
+		c[k] = v
+	}
+
+	return c
 }

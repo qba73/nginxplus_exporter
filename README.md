@@ -1,4 +1,7 @@
+[![Go](https://github.com/qba73/ngx-prometheus-exporter/actions/workflows/go.yml/badge.svg)](https://github.com/qba73/ngx-prometheus-exporter/actions/workflows/go.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/nginxinc/nginx-prometheus-exporter)](https://goreportcard.com/report/github.com/nginxinc/nginx-prometheus-exporter)
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/nginxinc/nginx-prometheus-exporter?logo=go)
+
 
 # NGX Prometheus Exporter
 

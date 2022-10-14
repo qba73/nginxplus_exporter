@@ -3,7 +3,7 @@ module github.com/nginxinc/nginx-prometheus-exporter
 go 1.19
 
 require (
-	github.com/google/go-cmp v0.5.8
+	github.com/google/go-cmp v0.5.9
 	github.com/nginxinc/nginx-plus-go-client v0.10.0
 	github.com/prometheus/client_golang v1.13.0
 	github.com/prometheus/common v0.37.0

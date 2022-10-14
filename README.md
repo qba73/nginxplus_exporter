@@ -1,9 +1,10 @@
-[![CI](https://github.com/qba73/ngx-prometheus-exporter/workflows/Continuous%20Integration/badge.svg)](https://github.com/qba73/ngx-prometheus-exporter/actions?query=workflow%3A%22Continuous+Integration%22) 
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/nginxinc/nginx-prometheus-exporter?logo=go)
 
-# NGINX Prometheus Exporter
+# NGX Prometheus Exporter
 
-NGINX Prometheus exporter makes it possible to monitor NGINX or NGINX Plus using Prometheus.
+This project is based on the [official NGINX Prometheus exporter](https://github.com/nginxinc/nginx-prometheus-exporter).
+
+The `NGX Prometheus exporter` makes it possible to monitor NGINX or NGINX Plus using Prometheus. It addresses a handful of questions and features (work in progress) requested in the original repository.
 
 ## Overview
 

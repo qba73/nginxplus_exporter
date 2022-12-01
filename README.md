@@ -1,21 +1,18 @@
-[![Go](https://github.com/qba73/ngx-prometheus-exporter/actions/workflows/go.yml/badge.svg)](https://github.com/qba73/ngx-prometheus-exporter/actions/workflows/go.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/nginxinc/nginx-prometheus-exporter)](https://goreportcard.com/report/github.com/nginxinc/nginx-prometheus-exporter)
-![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/nginxinc/nginx-prometheus-exporter?logo=go)
+[![Go](https://github.com/qba73/nginx_exporter/actions/workflows/go.yml/badge.svg)](https://github.com/qba73/nginx_exporter/actions/workflows/go.yml)
 
+# NGINX Exporter for Prometheus
 
-# NGX Prometheus Exporter
+This project was initially based on the [official NGINX Prometheus exporter](https://github.com/nginxinc/nginx-prometheus-exporter).
 
-This project is based on the [official NGINX Prometheus exporter](https://github.com/nginxinc/nginx-prometheus-exporter).
-
-The `NGX Prometheus exporter` makes it possible to monitor NGINX or NGINX Plus using Prometheus. It addresses a handful of questions and features (work in progress) requested in the original repository.
+The `NGINX Exporter` is a Prometheus exporter for NGINX and NGINX Plus.
 
 ## Overview
 
-[NGINX](https://nginx.org) exposes a handful of metrics via the [stub_status page](https://nginx.org/en/docs/http/ngx_http_stub_status_module.html#stub_status). [NGINX Plus](https://www.nginx.com/products/nginx/) provides a richer set of metrics via the [API](https://nginx.org/en/docs/http/ngx_http_api_module.html) and the [monitoring dashboard](https://www.nginx.com/products/nginx/live-activity-monitoring/). NGINX Prometheus exporter fetches the metrics from a single NGINX or NGINX Plus, converts the metrics into appropriate Prometheus metrics types and finally exposes them via an HTTP server to be collected by [Prometheus](https://prometheus.io/).
+TODO
 
 ## Getting Started
 
-In this section, we show how to quickly run NGINX Prometheus Exporter for NGINX or NGINX Plus.
+TODO
 
 ### A Note about NGINX Ingress Controller
 
@@ -296,14 +293,8 @@ todo: add information here
 ```
 
 ### Homebrew
-You can add the NGINX homebrew tap with
-```
-$ brew tap sevenbytes/tap
-```
-and then install the formula with
-```
-$ brew install nginx-prometheus-exporter
-```
+
+TODO
 
 ## Building the Exporter
 
@@ -334,11 +325,12 @@ Note: the binary is built for the OS/arch of your machine. To build binaries for
 The binary is built with the name `nginx-prometheus-exporter`.
 
 ## Grafana Dashboard
+
 The official Grafana dashboard is provided with the exporter for NGINX. Check the [Grafana Dashboard](./grafana/README.md) documentation for more information.
 
 ## Contacts
 
-If you have any suggestions or experience issues with the NGINX Prometheus Exporter, please create an issue or send a pull request on GitHub.
+If you have any suggestions or experience issues with the NGINX Exporter, please create an issue or send a pull request on GitHub.
 
 ## Contributing
 

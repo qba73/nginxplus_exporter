@@ -6,8 +6,8 @@ import (
 	"sync"
 
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/qba73/nginx_exporter/client"
 	plusclient "github.com/qba73/ngx"
-	"github.com/qba73/ngx-prometheus-exporter/client"
 )
 
 // =================================================================
@@ -967,7 +967,7 @@ func (c *NginxPlusCollector) Collect(ch chan<- prometheus.Metric) {
 			prometheus.GaugeValue, float64(upstream.Zombies), name)
 	}
 
-	if stats.StreamZoneSync != nil {
+	if stats.StreamZoneSync.Zones != nil {
 		for name, zone := range stats.StreamZoneSync.Zones {
 			ch <- prometheus.MustNewConstMetric(c.streamZoneSyncMetrics["records_pending"],
 				prometheus.GaugeValue, float64(zone.RecordsPending), name)

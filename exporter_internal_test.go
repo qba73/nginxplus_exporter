@@ -5,8 +5,6 @@ import (
 	"reflect"
 	"testing"
 	"time"
-
-	exporter "github.com/qba73/nginx_exporter"
 )
 
 func TestCreateClientWithRetries(t *testing.T) {
@@ -67,7 +65,7 @@ func TestCreateClientWithRetries(t *testing.T) {
 				return tt.args.client, tt.args.err
 			}
 
-			got, err := exporter.CreateClientWithRetries(getClient, tt.args.retries, tt.args.retryInterval)
+			got, err := CreateClientWithRetries(getClient, tt.args.retries, tt.args.retryInterval)
 
 			actualRetries := invocations - 1
 
@@ -92,31 +90,31 @@ func TestParsePositiveDuration(t *testing.T) {
 	tests := []struct {
 		name      string
 		testInput string
-		want      exporter.PositiveDuration
+		want      PositiveDuration
 		wantErr   bool
 	}{
 		{
 			"ParsePositiveDuration returns a positiveDuration",
 			"15ms",
-			exporter.PositiveDuration{15 * time.Millisecond},
+			PositiveDuration{15 * time.Millisecond},
 			false,
 		},
 		{
 			"ParsePositiveDuration returns error for trying to parse negative value",
 			"-15ms",
-			exporter.PositiveDuration{},
+			PositiveDuration{},
 			true,
 		},
 		{
 			"ParsePositiveDuration returns error for trying to parse empty string",
 			"",
-			exporter.PositiveDuration{},
+			PositiveDuration{},
 			true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := exporter.ParsePositiveDuration(tt.testInput)
+			got, err := ParsePositiveDuration(tt.testInput)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("parsePositiveDuration() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -190,19 +188,19 @@ func TestParseConstLabels(t *testing.T) {
 	tests := []struct {
 		name    string
 		labels  string
-		want    exporter.ConstLabel
+		want    ConstLabel
 		wantErr bool
 	}{
 		{
 			name:    "Const labels with no labels",
 			labels:  "",
-			want:    exporter.ConstLabel{},
+			want:    ConstLabel{},
 			wantErr: false,
 		},
 		{
 			name:   "Const labels with one label with valid format",
 			labels: "label=valid",
-			want: exporter.ConstLabel{
+			want: ConstLabel{
 				Labels: map[string]string{"label": "valid"},
 			},
 			wantErr: false,
@@ -210,31 +208,31 @@ func TestParseConstLabels(t *testing.T) {
 		{
 			name:    "Const labels with one label with invalid format",
 			labels:  "label: invalid",
-			want:    exporter.ConstLabel{},
+			want:    ConstLabel{},
 			wantErr: true,
 		},
 		{
 			name:    "Const labels with invalid format for multiple labels",
 			labels:  "label=valid,,label2=wrongformat",
-			want:    exporter.ConstLabel{},
+			want:    ConstLabel{},
 			wantErr: true,
 		},
 		{
 			name:    "Const labels with multiple labels, one label with invalid format",
 			labels:  "label=valid,label2:wrongformat",
-			want:    exporter.ConstLabel{},
+			want:    ConstLabel{},
 			wantErr: true,
 		},
 		{
 			name:    "Const labels with label name containing invalid char",
 			labels:  "l bel=invalid",
-			want:    exporter.ConstLabel{},
+			want:    ConstLabel{},
 			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := exporter.ParseConstLabels(tt.labels)
+			got, err := ParseConstLabels(tt.labels)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("parseConstLabels() error = %v, wantErr %v", err, tt.wantErr)
 				return

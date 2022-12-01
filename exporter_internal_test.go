@@ -1,4 +1,4 @@
-package nginx_exporter_test
+package nginx_exporter
 
 import (
 	"errors"
@@ -169,7 +169,7 @@ func TestParseUnixSocketAddress(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			socketPath, requestPath, err := exporter.ParseUnixSocketAddress(tt.testInput)
+			socketPath, requestPath, err := ParseUnixSocketAddress(tt.testInput)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("parseUnixSocketAddress() error = %v, wantErr %v", err, tt.wantErr)
 				return

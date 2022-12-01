@@ -1,4 +1,4 @@
-package main
+package nginx_exporter
 
 import (
 	"context"
@@ -18,12 +18,12 @@ import (
 	"syscall"
 	"time"
 
-	plusclient "github.com/nginxinc/nginx-plus-go-client/client"
-	"github.com/nginxinc/nginx-prometheus-exporter/client"
-	"github.com/nginxinc/nginx-prometheus-exporter/collector"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/common/model"
+	"github.com/qba73/nginx_exporter/client"
+	"github.com/qba73/nginx_exporter/collector"
+	plusclient "github.com/qba73/ngx"
 )
 
 func getEnv(key, defaultValue string) string {
@@ -58,37 +58,37 @@ func getEnvBool(key string, defaultValue bool) bool {
 	return b
 }
 
-func getEnvPositiveDuration(key string, defaultValue time.Duration) positiveDuration {
+func getEnvPositiveDuration(key string, defaultValue time.Duration) PositiveDuration {
 	value, ok := os.LookupEnv(key)
 	if !ok {
-		return positiveDuration{defaultValue}
+		return PositiveDuration{defaultValue}
 	}
 
-	posDur, err := parsePositiveDuration(value)
+	posDur, err := ParsePositiveDuration(value)
 	if err != nil {
 		log.Fatalf("Environment variable value for %s must be a positive duration: %v", key, err)
 	}
 	return posDur
 }
 
-func getEnvConstLabels(key string, defaultValue map[string]string) constLabel {
+func getEnvConstLabels(key string, defaultValue map[string]string) ConstLabel {
 	value, ok := os.LookupEnv(key)
 	if !ok {
-		return constLabel{defaultValue}
+		return ConstLabel{defaultValue}
 	}
 
-	cLabel, err := parseConstLabels(value)
+	cLabel, err := ParseConstLabels(value)
 	if err != nil {
 		log.Fatalf("Environment variable value for %s must be a const label or a list of const labels: %v", key, err)
 	}
 	return cLabel
 }
 
-// positiveDuration is a wrapper of time.Duration to ensure only positive values are accepted
-type positiveDuration struct{ time.Duration }
+// PositiveDuration is a wrapper of time.Duration to ensure only positive values are accepted
+type PositiveDuration struct{ time.Duration }
 
-func (pd *positiveDuration) Set(s string) error {
-	dur, err := parsePositiveDuration(s)
+func (pd *PositiveDuration) Set(s string) error {
+	dur, err := ParsePositiveDuration(s)
 	if err != nil {
 		return err
 	}
@@ -97,41 +97,43 @@ func (pd *positiveDuration) Set(s string) error {
 	return nil
 }
 
-func parsePositiveDuration(s string) (positiveDuration, error) {
+func ParsePositiveDuration(s string) (PositiveDuration, error) {
 	dur, err := time.ParseDuration(s)
 	if err != nil {
-		return positiveDuration{}, err
+		return PositiveDuration{}, err
 	}
 	if dur < 0 {
-		return positiveDuration{}, fmt.Errorf("negative duration %v is not valid", dur)
+		return PositiveDuration{}, fmt.Errorf("negative duration %v is not valid", dur)
 	}
-	return positiveDuration{dur}, nil
+	return PositiveDuration{dur}, nil
 }
 
-func createPositiveDurationFlag(name string, value positiveDuration, usage string) *positiveDuration {
+func createPositiveDurationFlag(name string, value PositiveDuration, usage string) *PositiveDuration {
 	flag.Var(&value, name, usage)
 	return &value
 }
 
-type constLabel struct{ labels map[string]string }
+type ConstLabel struct {
+	Labels map[string]string
+}
 
-func (cl *constLabel) Set(s string) error {
-	labelList, err := parseConstLabels(s)
+func (cl *ConstLabel) Set(s string) error {
+	labelList, err := ParseConstLabels(s)
 	if err != nil {
 		return err
 	}
 
-	cl.labels = labelList.labels
+	cl.Labels = labelList.Labels
 	return nil
 }
 
-func (cl *constLabel) String() string {
-	return fmt.Sprint(cl.labels)
+func (cl *ConstLabel) String() string {
+	return fmt.Sprint(cl.Labels)
 }
 
-func parseConstLabels(labels string) (constLabel, error) {
+func ParseConstLabels(labels string) (ConstLabel, error) {
 	if labels == "" {
-		return constLabel{}, nil
+		return ConstLabel{}, nil
 	}
 
 	constLabels := make(map[string]string)
@@ -140,30 +142,32 @@ func parseConstLabels(labels string) (constLabel, error) {
 	for _, l := range labelList {
 		dat := strings.Split(l, "=")
 		if len(dat) != 2 {
-			return constLabel{}, fmt.Errorf("const label %s has wrong format. Example valid input 'labelName=labelValue'", l)
+			return ConstLabel{}, fmt.Errorf("const label %s has wrong format. Example valid input 'labelName=labelValue'", l)
 		}
 
 		labelName := model.LabelName(dat[0])
 		if !labelName.IsValid() {
-			return constLabel{}, fmt.Errorf("const label %s has wrong format. %s contains invalid characters", l, labelName)
+			return ConstLabel{}, fmt.Errorf("const label %s has wrong format. %s contains invalid characters", l, labelName)
 		}
 
 		labelValue := model.LabelValue(dat[1])
 		if !labelValue.IsValid() {
-			return constLabel{}, fmt.Errorf("const label %s has wrong format. %s contains invalid characters", l, labelValue)
+			return ConstLabel{}, fmt.Errorf("const label %s has wrong format. %s contains invalid characters", l, labelValue)
 		}
 
 		constLabels[dat[0]] = dat[1]
 	}
-	return constLabel{labels: constLabels}, nil
+	return ConstLabel{
+		Labels: constLabels,
+	}, nil
 }
 
-func createConstLabelsFlag(name string, value constLabel, usage string) *constLabel {
+func createConstLabelsFlag(name string, value ConstLabel, usage string) *ConstLabel {
 	flag.Var(&value, name, usage)
 	return &value
 }
 
-func createClientWithRetries(getClient func() (interface{}, error), retries uint, retryInterval time.Duration) (interface{}, error) {
+func CreateClientWithRetries(getClient func() (interface{}, error), retries uint, retryInterval time.Duration) (interface{}, error) {
 	var err error
 	var nginxClient interface{}
 
@@ -180,7 +184,7 @@ func createClientWithRetries(getClient func() (interface{}, error), retries uint
 	return nil, err
 }
 
-func parseUnixSocketAddress(address string) (string, string, error) {
+func ParseUnixSocketAddress(address string) (string, string, error) {
 	addressParts := strings.Split(address, ":")
 	addressPartsLength := len(addressParts)
 
@@ -201,7 +205,7 @@ func getListener(listenAddress string) (net.Listener, error) {
 	var err error
 
 	if strings.HasPrefix(listenAddress, "unix:") {
-		path, _, pathError := parseUnixSocketAddress(listenAddress)
+		path, _, pathError := ParseUnixSocketAddress(listenAddress)
 		if pathError != nil {
 			return listener, fmt.Errorf("parsing unix domain socket listen address %s failed: %w", listenAddress, pathError)
 		}
@@ -294,7 +298,8 @@ For NGINX, the stub_status page must be available through the URI. For NGINX Plu
 		"A comma separated list of constant labels that will be used in every metric. Format is label1=value1,label2=value2... The default value can be overwritten by CONST_LABELS environment variable.")
 )
 
-func main() {
+// func main() {
+func RunCLI() {
 	flag.Parse()
 
 	commitHash, commitTime, dirtyBuild := getBuildInfo()
@@ -315,7 +320,7 @@ func main() {
 			Name: "nginxexporter_build_info",
 			Help: "Exporter build information",
 			ConstLabels: collector.MergeLabels(
-				constLabels.labels,
+				constLabels.Labels,
 				prometheus.Labels{
 					"version": version,
 					"commit":  commitHash,
@@ -358,7 +363,7 @@ func main() {
 		TLSClientConfig: sslConfig,
 	}
 	if strings.HasPrefix(*scrapeURI, "unix:") {
-		socketPath, requestPath, err := parseUnixSocketAddress(*scrapeURI)
+		socketPath, requestPath, err := ParseUnixSocketAddress(*scrapeURI)
 		if err != nil {
 			log.Fatalf("Parsing unix domain socket scrape address %s failed: %v", *scrapeURI, err)
 		}
@@ -370,7 +375,7 @@ func main() {
 		scrapeURI = &newScrapeURI
 	}
 
-	userAgent := fmt.Sprintf("NGINX-Prometheus-Exporter/v%v", version)
+	userAgent := fmt.Sprintf("NGX-Prometheus-Exporter/v%v", version)
 	userAgentRT := &userAgentRoundTripper{
 		agent: userAgent,
 		rt:    transport,
@@ -397,22 +402,22 @@ func main() {
 	}()
 
 	if *nginxPlus {
-		plusClient, err := createClientWithRetries(func() (interface{}, error) {
-			return plusclient.NewNginxClient(httpClient, *scrapeURI)
+		plusClient, err := CreateClientWithRetries(func() (interface{}, error) {
+			return plusclient.NewClient(*scrapeURI)
 		}, *nginxRetries, nginxRetryInterval.Duration)
 		if err != nil {
 			log.Fatalf("Could not create Nginx Plus Client: %v", err)
 		}
 		variableLabelNames := collector.NewVariableLabelNames(nil, nil, nil, nil, nil, nil)
-		registry.MustRegister(collector.NewNginxPlusCollector(plusClient.(*plusclient.NginxClient), "nginxplus", variableLabelNames, constLabels.labels))
+		registry.MustRegister(collector.NewNginxPlusCollector(plusClient.(*plusclient.Client), "nginxplus", variableLabelNames, constLabels.Labels))
 	} else {
-		ossClient, err := createClientWithRetries(func() (interface{}, error) {
+		ossClient, err := CreateClientWithRetries(func() (interface{}, error) {
 			return client.NewNginxClient(httpClient, *scrapeURI)
 		}, *nginxRetries, nginxRetryInterval.Duration)
 		if err != nil {
 			log.Fatalf("Could not create Nginx Client: %v", err)
 		}
-		registry.MustRegister(collector.NewNginxCollector(ossClient.(*client.NginxClient), "nginx", constLabels.labels))
+		registry.MustRegister(collector.NewNginxCollector(ossClient.(*client.NginxClient), "nginx", constLabels.Labels))
 	}
 	http.Handle(*metricsPath, promhttp.HandlerFor(registry, promhttp.HandlerOpts{}))
 

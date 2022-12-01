@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/nginxinc/nginx-prometheus-exporter/collector"
+	"github.com/qba73/ngx-prometheus-exporter/collector"
 )
 
 func TestMergeLabels(t *testing.T) {

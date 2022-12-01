@@ -5,9 +5,9 @@ import (
 	"log"
 	"sync"
 
-	plusclient "github.com/nginxinc/nginx-plus-go-client/client"
-	"github.com/nginxinc/nginx-prometheus-exporter/client"
 	"github.com/prometheus/client_golang/prometheus"
+	plusclient "github.com/qba73/ngx"
+	"github.com/qba73/ngx-prometheus-exporter/client"
 )
 
 // =================================================================
@@ -31,7 +31,7 @@ type LabelUpdater interface {
 
 // NginxPlusCollector collects NGINX Plus metrics. It implements prometheus.Collector interface.
 type NginxPlusCollector struct {
-	nginxClient                    *plusclient.NginxClient
+	nginxClient                    *plusclient.Client
 	totalMetrics                   map[string]*prometheus.Desc
 	serverZoneMetrics              map[string]*prometheus.Desc
 	upstreamMetrics                map[string]*prometheus.Desc
@@ -226,7 +226,7 @@ func NewVariableLabelNames(upstreamServerVariableLabelNames []string, serverZone
 }
 
 // NewNginxPlusCollector creates an NginxPlusCollector.
-func NewNginxPlusCollector(nginxClient *plusclient.NginxClient, namespace string, variableLabelNames VariableLabelNames, constLabels map[string]string) *NginxPlusCollector {
+func NewNginxPlusCollector(nginxClient *plusclient.Client, namespace string, variableLabelNames VariableLabelNames, constLabels map[string]string) *NginxPlusCollector {
 	upstreamServerVariableLabelNames := append(variableLabelNames.UpstreamServerVariableLabelNames, variableLabelNames.UpstreamServerPeerVariableLabelNames...)
 	streamUpstreamServerVariableLabelNames := append(variableLabelNames.StreamUpstreamServerVariableLabelNames, variableLabelNames.StreamUpstreamServerPeerVariableLabelNames...)
 	return &NginxPlusCollector{

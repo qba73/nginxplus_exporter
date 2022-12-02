@@ -11,6 +11,7 @@ deps:
     SAVE ARTIFACT go.sum AS LOCAL go.sum
 
 build:
+    FROM +deps
     COPY exporter.go .
     RUN go build -o build/nginx_exporter exporter.go
     SAVE ARTIFACT build/nginx_exporter /nginx_exporter AS LOCAL build/nginx_exporter

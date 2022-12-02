@@ -1,6 +1,6 @@
 VERSION = 0.0.1
 TAG = $(VERSION)
-PREFIX = nginx/nginx_exporter
+PREFIX = qba73/nginx_exporter
 
 .PHONY: build
 build:

@@ -21,7 +21,7 @@ ENTRYPOINT [ "/usr/bin/nginx_exporter" ]
 
 
 FROM intermediate as container
-COPY --from=builder --link /go/src/github.com/qba7/nginx_exporter/nginx_exporter /usr/bin/
+COPY --from=builder --link /go/src/github.com/qba73/nginx_exporter/nginx_exporter /usr/bin/
 
 
 FROM intermediate as goreleaser
@@ -29,7 +29,6 @@ ARG TARGETARCH
 ARG TARGETVARIANT
 ARG TARGETPLATFORM
 
-LABEL org.nginx.exporter.image.build.target="${TARGETPLATFORM}"
-LABEL org.nginx.exporter.image.build.version="goreleaser"
+LABEL org.qba73.exporter.image.build.target="${TARGETPLATFORM}"
 
 COPY --link dist/nginx_exporter_linux_$TARGETARCH${TARGETVARIANT:+_7}*/nginx_exporter /usr/bin/

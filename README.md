@@ -1,10 +1,10 @@
 [![Go](https://github.com/qba73/nginx_exporter/actions/workflows/go.yml/badge.svg)](https://github.com/qba73/nginx_exporter/actions/workflows/go.yml)
 
-# NGINX Exporter for Prometheus
+# NGINX Plus Exporter for Prometheus
 
 This project was initially based on the [official NGINX Prometheus exporter](https://github.com/nginxinc/nginx-prometheus-exporter).
 
-The `NGINX Exporter` is a Prometheus exporter for NGINX and NGINX Plus.
+The `NGINX Exporter` is a Prometheus exporter for NGINX Plus.
 
 ## Overview
 
